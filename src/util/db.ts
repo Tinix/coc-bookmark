@@ -1,27 +1,28 @@
 // modified from https://github.com/neoclide/coc.nvim/blob/master/src/model/db.ts
 import path from 'path'
-import { statAsync, writeFileAsync, readFileAsync, mkdirAsync } from './fs'
+import { fsWriteFile, fsReadFile, fsMkdir, fsStat } from './fs'
+import { promises as fsPromises } from 'fs'
 
 export default class BookmarkDB {
   constructor(private readonly filepath: string) { }
 
   public async load(): Promise<any> {
     const dir = path.dirname(this.filepath)
-    const stat = await statAsync(dir)
+    const stat = await fsStat(dir)
     if (!stat || !stat.isDirectory()) {
-      await mkdirAsync(dir)
-      await writeFileAsync(this.filepath, '{}')
+      await fsPromises.mkdir(this.filepath)
+      await fsPromises.writeFile(this.filepath, '{}')
       return {}
     }
     try {
-      const content = await readFileAsync(this.filepath)
+      const content = await fsReadFile(this.filepath)
       const data = JSON.parse(content.trim())
       // former bookmark data structure is an array.
       // so just clear them, sadly no other ways :(
       if (Array.isArray(data)) throw new Error("Outdated bookmark format")
       return data
     } catch {
-      await writeFileAsync(this.filepath, '{}')
+      await fsWriteFile(this.filepath, '{}')
       return {}
     }
   }
@@ -58,14 +59,14 @@ export default class BookmarkDB {
     let len = parts.length
     if (obj == null) {
       let dir = path.dirname(this.filepath)
-      await mkdirAsync(dir)
+      await fsMkdir(dir)
       obj = origin
     }
     for (let i = 0; i < len; i++) {
       let key = parts[i]
       if (i == len - 1) {
         obj[key] = data
-        await writeFileAsync(this.filepath, JSON.stringify(origin, null, 2))
+        await fsWriteFile(this.filepath, JSON.stringify(origin, null, 2))
         break
       }
       if (typeof obj[key] == 'undefined') {
@@ -88,7 +89,7 @@ export default class BookmarkDB {
       }
       if (i == len - 1) {
         delete obj[parts[i]]
-        await writeFileAsync(this.filepath, JSON.stringify(origin, null, 2))
+        await fsWriteFile(this.filepath, JSON.stringify(origin, null, 2))
         break
       }
       obj = obj[parts[i]]
@@ -96,8 +97,8 @@ export default class BookmarkDB {
   }
 
   public async clear(): Promise<void> {
-    let stat = await statAsync(this.filepath)
+    let stat = await fsStat(this.filepath)
     if (!stat || !stat.isFile()) return
-    await writeFileAsync(this.filepath, '{}')
+    await fsWriteFile(this.filepath, '{}')
   }
 }

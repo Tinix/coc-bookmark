@@ -10,7 +10,7 @@ import {
 import { Position } from 'vscode-languageserver-protocol'
 import BookmarkDB from '../util/db'
 import { decode, encode, BookmarkItem } from '../commands'
-import { statAsync } from '../util/fs'
+import { fsStat } from '../util/fs'
 
 export default class BookmarkList extends BasicList {
   public readonly name = 'bookmark'
@@ -40,7 +40,7 @@ export default class BookmarkList extends BasicList {
     const data = await this.db.load() as Object
     for (let [filepath, bookmarks] of Object.entries(data)) {
       filepath = decode(filepath)
-      const stat = await statAsync(filepath)
+      const stat = await fsStat(filepath)
       if (!(stat && stat.isFile())) {
         await this.db.delete(`${encode(filepath)}`)
         continue

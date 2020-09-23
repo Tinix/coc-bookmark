@@ -5,7 +5,7 @@ import {
   workspace,
   events
 } from 'coc.nvim'
-import { mkdirAsync, statAsync } from './util/fs'
+import { fsStat, fsMkdir } from './util/fs'
 import BookmarkList from './lists/bookmark'
 import Bookmark from './commands'
 import path from 'path'
@@ -20,9 +20,9 @@ export async function activate(context: ExtensionContext): Promise<void> {
   const db = new BookmarkDB(path.join(storagePath, 'bookmark.json'))
   const bookmark = new Bookmark(nvim, db)
 
-  const stat = await statAsync(storagePath)
+  const stat = await fsStat(storagePath)
   if (!stat || !stat.isDirectory()) {
-    await mkdirAsync(storagePath)
+    await fsMkdir(storagePath)
   }
 
   const sign = config.get<string>('sign', '🔖')
