@@ -25,7 +25,7 @@ export default class Bookmark {
 
   public async annotate(): Promise<void> {
     const annotation = await workspace.requestInput('Annotation')
-    if (annotation && annotation.trim()) {
+    if (annotation?.trim()) {
       await this.getDocInfo()
       await this.create(annotation.trim())
       await this.refresh()

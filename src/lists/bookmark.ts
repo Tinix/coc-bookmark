@@ -41,7 +41,7 @@ export default class BookmarkList extends BasicList {
     for (let [filepath, bookmarks] of Object.entries(data)) {
       filepath = decode(filepath)
       const stat = await fsStat(filepath)
-      if (!(stat && stat.isFile())) {
+      if (!(stat?.isFile())) {
         await this.db.delete(`${encode(filepath)}`)
         continue
       }

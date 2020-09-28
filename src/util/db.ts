@@ -9,7 +9,7 @@ export default class BookmarkDB {
   public async load(): Promise<any> {
     const dir = path.dirname(this.filepath)
     const stat = await fsStat(dir)
-    if (!stat || !stat.isDirectory()) {
+    if (!(stat?.isDirectory())) {
       await fsPromises.mkdir(this.filepath)
       await fsPromises.writeFile(this.filepath, '{}')
       return {}
@@ -17,9 +17,6 @@ export default class BookmarkDB {
     try {
       const content = await fsReadFile(this.filepath)
       const data = JSON.parse(content.trim())
-      // former bookmark data structure is an array.
-      // so just clear them, sadly no other ways :(
-      if (Array.isArray(data)) throw new Error("Outdated bookmark format")
       return data
     } catch {
       await fsWriteFile(this.filepath, '{}')
@@ -98,7 +95,7 @@ export default class BookmarkDB {
 
   public async clear(): Promise<void> {
     let stat = await fsStat(this.filepath)
-    if (!stat || !stat.isFile()) return
+    if (!(stat?.isFile())) return
     await fsWriteFile(this.filepath, '{}')
   }
 }

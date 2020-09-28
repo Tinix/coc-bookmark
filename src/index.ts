@@ -21,7 +21,7 @@ export async function activate(context: ExtensionContext): Promise<void> {
   const bookmark = new Bookmark(nvim, db)
 
   const stat = await fsStat(storagePath)
-  if (!stat || !stat.isDirectory()) {
+  if (!(stat?.isDirectory())) {
     await fsMkdir(storagePath)
   }
 
