@@ -76,6 +76,7 @@
     "@voldikss/tsconfig": "^1.0.0",
     "@voldikss/tslint-config": "^1.0.6",
     "coc.nvim": "^0.0.75",
+    "colors": "^1.4.0",
     "rimraf": "^3.0.2",
     "ts-loader": "^6.2.1",
     "tslint": "^6.0.0",
